@@ -26,13 +26,14 @@ export default class Application extends EventEmitter {
       })
       .then(planets => {
         // Do something with the planets
-        console.log(planets)
+        // console.log(planets)
+        planets.forEach(p => this._create(p))
         
         if(!hasFinished){
           return this._findAllPlanets(pageNumber + 1);
         }
       })
-      .catch(err => reject(err.message))
+      .catch(err => console.error(err.message))
   }
 
   async _load(pageNumber){ 
@@ -62,14 +63,14 @@ export default class Application extends EventEmitter {
     this._loading.style.visibility = "hidden"; 
   }
 
-  _create(){
+  _create({name, terrain, population}){
     // For rendering of boxes (planets)
     const box = document.createElement("div");
     box.classList.add("box");
     box.innerHTML = this._render({
-      name: "Placeholder",
-      terrain: "placeholder",
-      population: 0,
+      name,
+      terrain,
+      population
     });
 
     document.body.querySelector(".main").appendChild(box);
