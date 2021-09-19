@@ -12,6 +12,46 @@ export default class Application extends EventEmitter {
     super();
     this._loading = document.querySelector(".progress");
 
+    this._load()
+    .then(data => {
+      console.log(data)
+    })
+
+    this.emit(Application.events.READY);
+  }
+
+  async _load(){ 
+    // Fetch from all pages https://swapi.boom.dev/api/planets?page=
+    let pageNumber = 1;
+
+    this._startLoading();
+
+    try {
+      let responce = await fetch(`https://swapi.boom.dev/api/planets?page=${pageNumber}`)
+      if(responce.status === 200){
+        this._stopLoading();
+        return await responce.json();
+      }
+      throw new Error("Can't fetch resource!");
+    }
+    catch(err){
+        console.error(err.message)
+    }
+    finally {
+      this._stopLoading();  
+    }
+  }
+
+  _startLoading(){
+    this._loading.hidden = true
+  }
+
+  _stopLoading(){
+
+  }
+
+  _create(){
+    // For rendering of boxes (planets)
     const box = document.createElement("div");
     box.classList.add("box");
     box.innerHTML = this._render({
@@ -21,24 +61,6 @@ export default class Application extends EventEmitter {
     });
 
     document.body.querySelector(".main").appendChild(box);
-
-    this.emit(Application.events.READY);
-  }
-
-  async _load(){ 
-    // Fetch from all pages https://swapi.boom.dev/api/planets?page=
-  }
-
-  _startLoading(){
-
-  }
-
-  _stopLoading(){
-
-  }
-
-  _create(){
-    // For rendering of boxes (planets)
   }
   
   _render({ name, terrain, population }) {
